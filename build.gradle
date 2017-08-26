@@ -1,0 +1,51 @@
+group 'pl.setblack'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC2'
+    }
+}
+
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+
+dependencies {
+    compile "io.ratpack:ratpack-core:1.4.4"
+    compile group: 'com.javaslang', name: 'javaslang', version: '2.0.0-RC4'
+    compile "pl.setblack:aljen:1.0.0-SNAPSHOT"
+
+
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-RC2")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-RC2")
+
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+        attributes 'Main-Class': 'pl.setblack.mood.Server'
+    }
+}
+
